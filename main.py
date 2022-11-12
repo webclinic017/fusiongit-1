@@ -50,7 +50,7 @@ forexcodes = ['GBPUSD', 'GBPJPY', 'GBPCHF', 'GBPAUD', 'GBPNZD', 'EURUSD', 'EURNZ
 class Fusion_Algo(QCalgo_test_perfects):
 
     def Initialize(self):
-        self.ModeName = "Fusion PAPER vGIT_10-11.1" 
+        self.ModeName = "Fusion PAPER vGIT_11-11.1" 
         
         # set to use Oanda data
         self.SetBrokerageModel(BrokerageName.OandaBrokerage)

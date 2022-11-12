@@ -102,9 +102,11 @@ class QCalgo_order_management(QCalgo_consolidators):
 
 
         if logging: 
-            self.LogExtra(f"Trade LEVEL ENTRY {str(trigger_index + 1)} | Trade Id#{str(self.master_trade_id)} | {symbol} | MT4: {mt4_entry_time} {sd.activeDirection}: entering @ BID : ASK price {str(bid_price_now)} : {str(ask_price_now)} and size {str(bet_multiple * unit_buy)} and stoploss(pip) {sd.breakout_trail[0]} - Take Profit: {profit_level}  Stop Loss: {base_sl_level} Spread: {entry_pips}", f"{symbol} SHORT Trade Entry")
+            #TODO add these to the event log
+            #self.LogExtra(f"Trade LEVEL ENTRY {str(trigger_index + 1)} | Trade Id#{str(self.master_trade_id)} | {symbol} | MT4: {mt4_entry_time} {sd.activeDirection}: entering @ BID : ASK price {str(bid_price_now)} : {str(ask_price_now)} and size {str(bet_multiple * unit_buy)} and stoploss(pip) {sd.breakout_trail[0]} - Take Profit: {profit_level}  Stop Loss: {base_sl_level} Spread: {entry_pips}", f"{symbol} SHORT Trade Entry")
             if self.log_EMAs: 
-                self.LogExtra(f"1M 9EMA: {round(sd.emaWindow1M[0].Value, 5)} | 1M 45EMA: {round(sd.emaWindow1M_45[0].Value, 5)} | 1M 135EMA: {round(sd.emaWindow1M_135[0].Value, 5)} | 1M 200EMA: {round(sd.emaWindow1M_200[0].Value, 5)}", f"{symbol} EMAs check")
+                #self.LogExtra(f"1M 9EMA: {round(sd.emaWindow1M[0].Value, 5)} | 1M 45EMA: {round(sd.emaWindow1M_45[0].Value, 5)} | 1M 135EMA: {round(sd.emaWindow1M_135[0].Value, 5)} | 1M 200EMA: {round(sd.emaWindow1M_200[0].Value, 5)}", f"{symbol} EMAs check")
+                pass
         
         sd.entry_prices[trigger_index] = bid_price_now
         sd.last_trail_levels[trigger_index] = base_sl_level                        # Place a short order by negative quantity -- stop limit needs to be a slightly lower price
@@ -167,9 +169,11 @@ class QCalgo_order_management(QCalgo_consolidators):
 
 
         if logging: 
-            self.LogExtra(f"Trade LEVEL ENTRY {str(trigger_index + 1)} | Trade Id #{str(self.master_trade_id)} | {symbol} | MT4: {mt4_entry_time} {sd.activeDirection}: entering @ BID : ASK price {str(bid_price_now)} : {str(ask_price_now)} and size {str(bet_multiple * unit_buy)} and stoploss(pip) {sd.breakout_trail[0]} - Take Profit: {profit_level}  Stop Loss: {base_sl_level} Spread: {entry_pips}", f"{symbol} LONG Trade Entry")
+            #TODO add these to the event log
+            #self.LogExtra(f"Trade LEVEL ENTRY {str(trigger_index + 1)} | Trade Id #{str(self.master_trade_id)} | {symbol} | MT4: {mt4_entry_time} {sd.activeDirection}: entering @ BID : ASK price {str(bid_price_now)} : {str(ask_price_now)} and size {str(bet_multiple * unit_buy)} and stoploss(pip) {sd.breakout_trail[0]} - Take Profit: {profit_level}  Stop Loss: {base_sl_level} Spread: {entry_pips}", f"{symbol} LONG Trade Entry")
             if self.log_EMAs: 
-                self.LogExtra(f"1M 9EMA: {round(sd.emaWindow1M[0].Value, 5)} | 1M 45EMA: {round(sd.emaWindow1M_45[0].Value, 5)} | 1M 135EMA: {round(sd.emaWindow1M_135[0].Value, 5)} | 1M 200EMA: {round(sd.emaWindow1M_200[0].Value, 5)}", f"{symbol} EMAs check")
+                #self.LogExtra(f"1M 9EMA: {round(sd.emaWindow1M[0].Value, 5)} | 1M 45EMA: {round(sd.emaWindow1M_45[0].Value, 5)} | 1M 135EMA: {round(sd.emaWindow1M_135[0].Value, 5)} | 1M 200EMA: {round(sd.emaWindow1M_200[0].Value, 5)}", f"{symbol} EMAs check")
+                pass
                            
         
         sd.entry_prices[trigger_index] = ask_price_now

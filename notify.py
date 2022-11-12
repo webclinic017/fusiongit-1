@@ -77,7 +77,7 @@ class QCalgo_notifications(QCalgo_channel_breakout):
         logsub = f"Breakout SPOTTED ** Get on Charts **: {symbol} {BO_type} @ {logdate}"  
 
         if self.LiveMode:
-            self.Notify.Email(self.EmailAddress, f"{self.ModeName} - {logsub}", logmsg)  
+            self.Notify.Email(self.EmailAddress, f"{logsub} | {self.ModeName} ", logmsg)  
         if self.debugging_trade_tracking:
             self.Debug(logsub + "\n" + logmsg)
             #print(logsub + "\n" + logmsg)
@@ -108,7 +108,7 @@ class QCalgo_notifications(QCalgo_channel_breakout):
             email_time = datetime.strftime(fusion_utils.get_times((self.Time - timedelta(minutes=1)), "us")["mt4"], "%d.%m.%y %H:%M")             
             if self.CountEmails < 480 and self.LiveMode:
                 self.CountEmails += 1
-                self.Notify.Email(self.EmailAddress, f"{self.ModeName}- Hourly Notification (MT4): {email_time}", logmsg)
+                self.Notify.Email(self.EmailAddress, f"Hourly Notification (MT4): {email_time} | {self.ModeName} ", logmsg)
             self.log_buffer_hourly = []
             
             #    myjson = '''
@@ -155,7 +155,7 @@ class QCalgo_notifications(QCalgo_channel_breakout):
         logdate = datetime.strftime(entry_time, "%d/%m/%y %H:%M")
         logsub = f"Trade Result: {symbol} {direction} @ {logdate}"
         if self.LiveMode:
-            self.Notify.Email(self.EmailAddress, f"{self.ModeName} - {logsub}", result_msg)  
+            self.Notify.Email(self.EmailAddress, f"{logsub} | {self.ModeName}", result_msg)  
         if self.debugging_trade_tracking:
             self.Debug(logsub + "\n" + result_msg)
 
@@ -166,7 +166,7 @@ class QCalgo_notifications(QCalgo_channel_breakout):
             # send email
             if self.CountEmails < 480:
                 self.CountEmails += 1
-                self.Notify.Email(self.EmailAddress, f"{self.ModeName}- {logsub}", logmsg)
+                self.Notify.Email(self.EmailAddress, f"{logsub} | {self.ModeName}", logmsg)
         self.Log(logmsg)        # log the message to the console as it arrives - do not wait for the hourly bundle
         
     # Formatted email - send immediately #10.8
@@ -175,7 +175,7 @@ class QCalgo_notifications(QCalgo_channel_breakout):
             if self.CountEmails < 480:
                 self.CountEmails += 1
                 logdate = datetime.strftime(self.Time, "%d/%m/%y %H:%M")
-                self.Notify.Email(self.EmailAddress, f"{self.ModeName} | {logsub}: {logdate}", logmsg)
+                self.Notify.Email(self.EmailAddress, f"{logsub}: {logdate} | {self.ModeName}", logmsg)
         self.Log(logmsg)        # log the message to the console as it arrives 
 
     
@@ -498,7 +498,7 @@ class QCalgo_notifications(QCalgo_channel_breakout):
             logsub = f"Event Log Result: {symbol} {stratdir} @ {breakout_time}"        
             if self.CountEmails < 480 and self.LiveMode:
                 self.CountEmails += 1
-                self.Notify.Email(self.EmailAddress, f"{self.ModeName} - {logsub}", table_message)
+                self.Notify.Email(self.EmailAddress, f"{logsub} | {self.ModeName}", table_message)
 
 
 
