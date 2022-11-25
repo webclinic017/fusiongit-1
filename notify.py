@@ -72,9 +72,9 @@ class QCalgo_notifications(QCalgo_channel_breakout):
         logmsg = f"Spotted: {BO_label}, {BO_type}, Pullback price: {BO_pullback1_price}, PB1 distance {pb1_distance_pips} pips\n" + self.ModeName   
         logmsg += f"\n5m: {my_template_5m} \n15m: {my_template_15m} \n30m: {my_template_30m} \n1h: {my_template_1h} \n4h: {my_template_4h} \n24h: {my_template_24h}"
         
-        logdate = fusion_utils.format_datetime_using_string(mt4_time, "%Y.%m.%d %H_%M_%S")
+        logdate = fusion_utils.format_datetime_using_string(mt4_time, "@ %H.%M %Y.%m.%d")
 
-        logsub = f"Breakout SPOTTED ** Get on Charts **: {symbol} {BO_type} @ {logdate}"  
+        logsub = f"** BREAKOUT Get on Charts **: {symbol} {BO_type} | {logdate}"  
 
         if self.LiveMode:
             self.Notify.Email(self.EmailAddress, f"{logsub} | {self.ModeName} ", logmsg)  
@@ -260,6 +260,33 @@ class QCalgo_notifications(QCalgo_channel_breakout):
                 to_file_only = True
                 write_to_hourly = False
                 self.OutputFunction(dump_all_to_file, to_file_only, write_to_hourly, None)
+
+            
+            #temp output candle log
+            fieldnames = ['candle_time_mt4', 'candle_chart', 'candle_type', 'candle_symbol']
+            rows = []
+            blank_row = {'candle_time_mt4': None, 
+                        'candle_chart': None,
+                        'candle_type': None,
+                        'candle_symbol': None}
+
+            for row in self.candle_type_log:
+                new_row = blank_row.copy()
+                new_row['candle_time_mt4'] = row['candle_time_mt4']
+                new_row['candle_chart'] = row['candle_chart']       
+                new_row['candle_type'] = row['candle_type']
+                new_row['candle_symbol'] = row['candle_symbol']
+
+                rows.append(new_row)
+                
+            path = os.path.join(Globals.DataFolder, "candle_type_dump.csv")
+            # FOR LIVE - SEARCH and REPLACE with poop
+            with open(path, 'w', encoding='UTF8', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+
+
 
 
                                                             

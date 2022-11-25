@@ -93,6 +93,16 @@ class TradingWindow(enum.Enum):
     Closed = 3
 
 
+class CandleType(enum.Enum):
+    Unknown = 0
+    BullishTrendBar = 1
+    BearishTrendBar = 2
+    BullishPinBar = 3
+    BearishPinBar = 4
+    BullishIceCreamBar = 5
+    BearishIceCreamBar = 6
+
+
 
     
 GREEN = 0

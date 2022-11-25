@@ -194,13 +194,17 @@ class builder_perfect_1(object):
                     # only set to expired if we didn't hit PB1, otherwise PB1hit is still recorded
                     self.perfect_library[-1]["status"] = "PB1 expired"
                     self.perfect_library[-1]["reason_notes"] = "Timeout - price did not reach PB1"    
-                    self.add_to_event_log(candle_open_1m_mt4, "BO CANCELLED", f"Timeout - price did not pull back to PB1", 0, "per tick")                                      
+                    self.add_to_event_log(candle_open_1m_mt4, "BO CANCELLED", f"Timeout - price did not pull back to PB1", 0, "per tick")  
+                    self.clear_down_perfect_and_write_log(sender, time_now)                                    
                 else:
-                    if not self.enter_trade and not self.squeeze_found:
-                        self.perfect_library[-1]["status"] = "squeeze_hunt_expired"
-                        self.perfect_library[-1]["reason_notes"] = "Timeout - squeeze did not occur"  
-                        self.add_to_event_log(candle_open_1m_mt4, "BO CANCELLED", f"Timeout - no valid entry", 0, "per tick")                         
-                self.clear_down_perfect_and_write_log(sender, time_now)
+                    #if not self.enter_trade and not self.squeeze_found:
+                    if not self.enter_trade:
+                        #self.perfect_library[-1]["status"] = "squeeze_hunt_expired"
+                        #self.perfect_library[-1]["reason_notes"] = "Timeout - squeeze did not occur"  
+                        #self.add_to_event_log(candle_open_1m_mt4, "BO CANCELLED", f"Timeout - no valid entry", 0, "per tick")      
+                        # SI 17.11.2022 - per Brad, dont timeout if we hit PB1 but not yet entered
+                        return True                   
+                #self.clear_down_perfect_and_write_log(sender, time_now)
         else:
             if self.log_details: sender.Debug(f"{symbol} {self.BO_label} Breakout on {chart_res} - Trading Window enforcement is disabled")      
 

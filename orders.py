@@ -640,6 +640,7 @@ class QCalgo_order_management(QCalgo_consolidators):
         ''' TODO: Need to add in the ability to have different Stop Loss and Take Profit setups on each live ticket.
         '''
         symbol = sd.Symbol
+        mt4_time = fusion_utils.get_times(self.Time, 'us')['mt4']
         
         if  sd.activeDirection == StratDirection.Short:
             # Already in a Short - need to manage trailling stop and take profit, at multiple levels
@@ -667,7 +668,7 @@ class QCalgo_order_management(QCalgo_consolidators):
                                 must_move_trailling_stop = True
                                 self.Debug(f" a. Level [{str(index +1)}], new Max pips on SHORT trade {symbol} - pnlpips: {round(pnlpips, 2)} ")
                                 #TODO Si move into manage perfect - just here for now                                
-                                sd.tbu_perfect_tracker[ChartRes.res5M].add_to_event_log(self.Time,"Mew Max Pips", f"pnlpips: {round(pnlpips, 2)}",0, "tick")     
+                                sd.tbu_perfect_tracker[ChartRes.res5M].add_to_event_log(mt4_time,"Mew Max Pips", f"pnlpips: {round(pnlpips, 2)}",0, "tick")     
                             sd.max_pips_profits[index] = pnlpips
 
                     if pnlpips < sd.max_pips_losses[index]:
@@ -709,7 +710,7 @@ class QCalgo_order_management(QCalgo_consolidators):
                     if sd.fti_in_control:                       
                         return 
 
-                    #must_move_trailling_stop = False    #si switch off TS
+                    must_move_trailling_stop = False    #si switch off TS
 
                     if must_move_stop_to_breakeven:
                         new_price_loss = new_stop_loss_pips * 1.0 * sd.minPriceVariation * 10      #turn into pips from pipettes               
@@ -757,7 +758,7 @@ class QCalgo_order_management(QCalgo_consolidators):
                                 # if profit has moved up by more than a whole pip from the prior level
                                 must_move_trailling_stop = True
                                 self.Debug(f" a. Level [{str(index +1)}], new Max pips on LONG trade {symbol} - pnlpips: {round(pnlpips, 2)} ")
-                                sd.tbu_perfect_tracker[ChartRes.res5M].add_to_event_log(self.Time,"Mew Max Pips", f"pnlpips: {round(pnlpips, 2)}",0, "tick")     
+                                sd.tbu_perfect_tracker[ChartRes.res5M].add_to_event_log(mt4_time,"Mew Max Pips", f"pnlpips: {round(pnlpips, 2)}",0, "tick")     
 
                             sd.max_pips_profits[index] = pnlpips
 

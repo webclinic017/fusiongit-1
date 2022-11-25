@@ -54,6 +54,7 @@ class SymbolData_1(object):
     def CalculatePerfectPoints(self, sender, symbol,sd,shortsign,my_perfect_trend,mybars,myemas,my4emas,mycolours,myceiling,myfloor,myPH,myTL, \
         myCHH,myCLL,myHH,myLL,signal_chart,pb1,pb2,pb3,logging=True): 
 
+        return 0 #si 12.11.2022 - swithed this off to avoid taking trades not brad perfects
         perfect_points = 0.0
         loggingDetails = ""
         statisticDetails = ""
@@ -281,6 +282,7 @@ class SymbolData_1(object):
         PB_4hr_9EMA_Distance_percent = 0   
         PB_Numbers = 0.0
         my4hr9EMA_Text = ""
+        my9EMA_Text = ""
         my9EMA = round(float(myemas[0].Value), 6)
         my_4hr_9EMA = round(float(my4emas[0].Value), 6)
     

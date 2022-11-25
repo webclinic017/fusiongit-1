@@ -72,6 +72,58 @@ class fusion_utils(object):
             # TODO: fix this to raise an exception instead of returning None
             return None
 
+    # return the canlde tyoe for the passed candle
+    @staticmethod
+    def get_candle_type(mybars, mycolours, pipsize):
+
+        wick_top = mybars[0].Bid.High
+        wick_bottom = mybars[0].Bid.Low
+        total_candle_length_pips = fusion_utils.get_difference_in_pips(wick_top, wick_bottom, pipsize)
+
+        # if the candle is a pure doji, return that
+        if mycolours[0] == BLACK:
+           return CandleType.Unknown
+
+        if mycolours[0] == GREEN:
+            candle_top = mybars[0].Bid.Close
+            candle_bottom = mybars[0].Bid.Open
+
+        if mycolours[0] == RED:
+            candle_top = mybars[0].Bid.Open
+            candle_bottom = mybars[0].Bid.Close
+            
+        candle_body_length_pips = fusion_utils.get_difference_in_pips(candle_top, candle_bottom, pipsize)  
+        top_third = fusion_utils.get_price_using_pips(wick_top, (total_candle_length_pips/3), pipsize, "subtract")
+        bottom_third = fusion_utils.get_price_using_pips(wick_bottom, (total_candle_length_pips/3), pipsize, "add")
+        body_wick_ratio = candle_body_length_pips / total_candle_length_pips
+
+       
+        #Trend Bars
+        if body_wick_ratio >= 0.67:
+            if mycolours[0] == GREEN:
+                return CandleType.BullishTrendBar
+            else:
+                return CandleType.BearishTrendBar
+
+        #Icecream Bars
+        if body_wick_ratio >= 0.5 and body_wick_ratio < 0.67:
+            if mycolours[0] == GREEN:
+                if candle_top >= top_third:
+                    return CandleType.BullishIceCreamBar
+            else:
+                if candle_bottom <= bottom_third:
+                    return CandleType.BearishIceCreamBar
+
+        #Pin Bars
+        if candle_top > top_third and candle_bottom >= top_third:
+            return CandleType.BullishPinBar
+        
+        if candle_top <= top_third and candle_bottom < top_third:
+            return CandleType.BearishPinBar                    
+
+
+        return CandleType.Unknown
+
     #check whether time is within 5 minutes of US equities start(9:30am EST)
     @staticmethod
     def is_time_within_5_minutes_of_US_equities_start(passed_datetime):
@@ -87,6 +139,15 @@ class fusion_utils(object):
     def get_difference_in_pips(price1, price2, pipsize):
         pip_difference = abs(round((price1 - price2) /pipsize,1))
         return  pip_difference
+
+    #return price after adding or deducting pips from it
+    @staticmethod
+    def get_price_using_pips(price, pips, pipsize, method):
+        if method == "add":
+            return round(price + (pips * pipsize * 10), 5)
+        else:   
+            return round(price - (pips * pipsize * 10), 5)
+            
 
     #return price depending on direction and type of order
     @staticmethod

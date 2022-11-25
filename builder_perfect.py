@@ -307,6 +307,7 @@ class builder_perfect(builder_perfect_1):
                 self.BO_status = "wait for PB1"            
             else:
                 self.BO_active = True
+                self.add_to_event_log(mt4_time, f"HOS Strong move - Cancelled", f"Strong move from HOS only {free_pips} when {room_pips_needed} pips room needed - cancelled", self.BO_pos4_price, "5 min")
                 self.clear_down_perfect_and_write_log(sender, time_now) 
                 if self.log_details: sender.Log(f"{symbol} {self.BO_label} Strong move from HOS only {free_pips} when {room_pips_needed} pips room needed - cancelled")
                 self.BO_status = f"Strong move from HOS only {free_pips} when {room_pips_needed} pips room needed - cancelled"
@@ -324,7 +325,7 @@ class builder_perfect(builder_perfect_1):
                     self.old_EH_price = self.EH_price
                     self.EH_price = referred_EH_price
                 if self.log_details: sender.Log(f"{symbol} {self.BO_label} Breakout, the CHH took out the EH - New EH is {self.EH_price} at {referred_EH_time}")
-                self.add_to_event_log(mt4_time, f"CHH took out the EH", "A new EH has been created", self.EH_price, referred_EH_time)   
+                self.add_to_event_log(mt4_time, f"CHH took out the EH", f"A new EH has been created {self.EH_price} at {referred_EH_time}", self.EH_price, "5 min")   
 
             
             if self.enforce_trading_window:
@@ -403,6 +404,7 @@ class builder_perfect(builder_perfect_1):
                 self.BO_status = "wait for PB1"            
             else:
                 self.BO_active = True
+                self.add_to_event_log(mt4_time, f"LOS Strong move - Cancelled", f"Strong move from LOS only {free_pips} when {room_pips_needed} pips room needed - cancelled", self.BO_pos4_price, "5 min")                
                 self.clear_down_perfect_and_write_log(sender, time_now)
                 if self.log_details: sender.Log(f"{symbol} {self.BO_label} Strong move from LOS only {free_pips} when {room_pips_needed} pips room needed - cancelled")
                 self.BO_status = f"Strong move from LOS only {free_pips} when {room_pips_needed} pips room needed - cancelled"
@@ -420,7 +422,7 @@ class builder_perfect(builder_perfect_1):
                     self.old_EL_price = self.EL_price
                     self.EL_price = referred_EL_price
                 if self.log_details: sender.Log(f"{symbol} {self.BO_label} Breakout, the CLL took out the EL - New EL is {self.EL_price} at {referred_EL_time}")
-                self.add_to_event_log(mt4_time, f"CLL took out the EL", "A new EL has been created",self.EL_price, referred_EL_time)                
+                self.add_to_event_log(mt4_time, f"CLL took out the EL", f"A new EL has been created {self.EL_price} at {referred_EL_time}", self.EL_price, "5 min")               
 
 
             if self.enforce_trading_window:

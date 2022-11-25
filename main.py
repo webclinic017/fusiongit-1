@@ -50,7 +50,7 @@ forexcodes = ['GBPUSD', 'GBPJPY', 'GBPCHF', 'GBPAUD', 'GBPNZD', 'EURUSD', 'EURNZ
 class Fusion_Algo(QCalgo_test_perfects):
 
     def Initialize(self):
-        self.ModeName = "Fusion PAPER vGIT_11-11.1" 
+        self.ModeName = "Fusion PAPER vGIT_25-11.1" 
         
         # set to use Oanda data
         self.SetBrokerageModel(BrokerageName.OandaBrokerage)
@@ -76,17 +76,21 @@ class Fusion_Algo(QCalgo_test_perfects):
             self.ManualLiveTrading = True
             self.ManualHistoryTrading = False    # Can turn off if we want backtesting without adding in the historic trades
             # TODO: make backtest start stop dates use a single updating value, so do not need to edit both
-            self.SetStartDate(2022, 11, 8)  # Set Start Date
-            self.SetEndDate(2022, 11, 8)        
+            self.SetStartDate(2022, 11, 15)  # Set Start Date
+            self.SetEndDate(2022, 11, 16)         
             self.backtest_start = "2022-10-10"
             self.backtest_end = "2022-11-8"
             self.auto_trade_brad_perfects = True
             self.SetWarmUp(timedelta(days=30), Resolution.Minute)    # Warm up 30 days of data - works fine in backtests
-            #self.myRes = Resolution.Minute
-            self.myRes = Resolution.Second
+            self.myRes = Resolution.Minute
+            #self.myRes = Resolution.Second
 
+        #temp oiutput for Brad to verify candle types
+        self.candle_type_log = []    #use this to output an event log per breakout
+        self.candle_item = {"candle_time__mt4": None,
+                        "candle_chart": None,
+                        "candle_type": None}
 
-        
         # History URL for backtesting manually entered trades
         self.FusionCsvHistoryUrl = "http://fusionfx.azurewebsites.net/submit/f_history.csv"
         self.FusionJsonReports = "https://fti-display.azure-api.net/fusion-api/"
@@ -166,7 +170,7 @@ class Fusion_Algo(QCalgo_test_perfects):
         self.master_trade_id = 100
         
         # For Perfect point and pull back calculations
-        self.MinimumPerfectPoints = 0   #CG 12_3
+        self.MinimumPerfectPoints = 20   #CG 12_3
         self.TriggerCandleWindowMax = 6 #nu_1_CGof candles 
         # Override whether to actually do the trades on Channel strategies - for testing
         self.flag_do_trade_channel = True
@@ -207,8 +211,10 @@ class Fusion_Algo(QCalgo_test_perfects):
             self.AllowChannel = ['GBPUSD', 'GBPJPY', 'GBPCHF', 'GBPAUD', 'GBPNZD', 'EURUSD', 'EURNZD', 'EURJPY', 'EURAUD', 'AUDUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'XAUUSD']
         else:
             # this is for backtesting mode
-            self.ForexSymbols = ['GBPJPY']
-            self.AllowChannel = ['GBPJPY']
+            #self.ForexSymbols = ['GBPJPY', 'GBPAUD', 'EURJPY', 'EURAUD', 'USDCAD', 'USDCHF', 'USDJPY']
+            #self.AllowChannel = ['GBPJPY', 'GBPAUD', 'EURJPY', 'EURAUD', 'USDCAD', 'USDCHF', 'USDJPY']            
+            self.ForexSymbols = ['XAUUSD']
+            self.AllowChannel = ['XAUUSD']
             #self.AllowChannel = []
             self.Log(f"Running a backtest from: {self.backtest_start} until {self.backtest_end} at resolution {self.myRes} [2=Minute]")
             
@@ -559,36 +565,50 @@ class Fusion_Algo(QCalgo_test_perfects):
                 c4ema = round(float(sd.emaWindow4H[0].Value), 6)
                 ctime = sd.Bars1H[0].EndTime
                 
-                '''start the coding looking for Perfect channel breakout PB\RTT setups'''
+                skip_section = True         # get rid of the noise for a bit - turn this to False to re-enable 5min stuff                          
+                if not skip_section:
                 
-                if sd.is_looking_for_possible_trade() or sd.is_looking_for_entry():          # only actively start up new possible trades if we are not already busy
-                    if symbol in self.AllowChannel and not sd.looking_for_channel_1H:
-                        self.channel_breakout_looking_checks_1H(self, symbol, sd, timenow, bidpricenow, my_4h_trend)
-                        
-                    if symbol in self.AllowChannel and sd.looking_for_channel_1H:
-                        self.channel_breakout_pre_entry_checks_1H(self, symbol, sd)
+                    if sd.is_looking_for_possible_trade() or sd.is_looking_for_entry():          # only actively start up new possible trades if we are not already busy
+                        if symbol in self.AllowChannel and not sd.looking_for_channel_1H:
+                            self.channel_breakout_looking_checks_1H(self, symbol, sd, timenow, bidpricenow, my_4h_trend)
+                            
+                        if symbol in self.AllowChannel and sd.looking_for_channel_1H:
+                            self.channel_breakout_pre_entry_checks_1H(self, symbol, sd)
 
 
             if sd.newEma30MAvailable:
                 sd.newEma30MAvailable = False
 
-                if sd.is_looking_for_possible_trade() or sd.is_looking_for_entry():
-                    # TODO: reinstate 30 minute checks for Perfects, but using totally separate tracking variables
-                    # TODO: make 30minute Perfect emails fire again
-                    if symbol in self.AllowChannel and not sd.looking_for_channel_30M:
-                        self.channel_breakout_looking_checks_30M(self, symbol, sd, timenow, bidpricenow, my_4h_trend)
-                        
-                    if symbol in self.AllowChannel and sd.looking_for_channel_30M:
-                        self.channel_breakout_pre_entry_checks_30M(self, symbol, sd)
+                skip_section = True         # get rid of the noise for a bit - turn this to False to re-enable 5min stuff                          
+                if not skip_section:
+
+                    if sd.is_looking_for_possible_trade() or sd.is_looking_for_entry():
+                        # TODO: reinstate 30 minute checks for Perfects, but using totally separate tracking variables
+                        # TODO: make 30minute Perfect emails fire again
+                        if symbol in self.AllowChannel and not sd.looking_for_channel_30M:
+                            self.channel_breakout_looking_checks_30M(self, symbol, sd, timenow, bidpricenow, my_4h_trend)
+                            
+                        if symbol in self.AllowChannel and sd.looking_for_channel_30M:
+                            self.channel_breakout_pre_entry_checks_30M(self, symbol, sd)
 
 
             if sd.newEma5MAvailable:
                 sd.newEma5MAvailable = False
 
-                skip_section = True         # get rid of the noise for a bit - turn this to False to re-enable 5min stuff          
-                
-                if not skip_section:
+                #SI 23.11.2022 temp checking of the bar types:
+                candle_type = fusion_utils.get_candle_type(sd.Bars5M, sd.Bars5MColour, sd.minPriceVariation * 10)
+                self.Debug("Candle Type: " + str(candle_type))                
 
+                self.candle_item["candle_time_mt4"] = fusion_utils.get_times(sd.Bars5M[0].Time, 'us')['mt4'].strftime("%Y.%m.%d, %H:%M:%S")             
+                self.candle_item["candle_chart"] = "5 min"
+                self.candle_item["candle_type"] = candle_type
+                self.candle_item["candle_symbol"] = symbol
+
+                self.candle_type_log.append(deepcopy(self.candle_item))
+
+
+                skip_section = True         # get rid of the noise for a bit - turn this to False to re-enable 5min stuff                          
+                if not skip_section:
                     if sd.is_looking_for_possible_trade() or sd.is_looking_for_entry():
                         # TODO: reinstate 5 minute checks for Perfects, but using totally separate tracking variables
                         # TODO: make 5 minute Perfect emails fire again
@@ -601,7 +621,7 @@ class Fusion_Algo(QCalgo_test_perfects):
            
             # trap particular time
             debug_time = fusion_utils.get_times(self.Time, 'us')['mt4'].strftime("%Y.%m.%d, %H:%M:%S")     
-            if debug_time == "2022.10.21, 03:15:00" and symbol == "USDCAD":
+            if debug_time == "2022.11.16, 00:40:00":
                 self.Debug({debug_time})                
                 my_hit = 1
 

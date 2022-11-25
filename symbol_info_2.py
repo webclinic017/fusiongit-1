@@ -232,6 +232,8 @@ class SymbolData_2(object):
                                     return True
         return False
 
+
+
     # Look for a Doji at most recent candle
     def IsDoji(self, mybars, mycolours):
         candleratio = 0.15       # open and close shouldn't be more than 15% of total length
