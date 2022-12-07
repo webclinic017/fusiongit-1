@@ -887,6 +887,12 @@ class builder_perfect(builder_perfect_1):
                         if self.move_breakeven > 8:
                             self.add_to_event_log(candle_open_1m_mt4,"Headroom Adjustment", f"Headroom reduced from {self.move_breakeven} to 8 pips", 8, "1 min")                            
                             self.move_breakeven = 8
+                        
+                        #si 07.12.2022 - reduce the move to BE if the spread is larger than 1.5 pips
+                        move_to_be_adjustment = self.spread_pips - 1.5
+                        if move_to_be_adjustment > 0:
+                            self.add_to_event_log(candle_open_1m_mt4,"Spread Adjustment", f"Move to BE reduced from {self.move_breakeven} to {self.move_breakeven - move_to_be_adjustment} pips", self.move_breakeven - move_to_be_adjustment, "1 min")                            
+                            self.move_breakeven = self.move_breakeven - move_to_be_adjustment
                                                     
                         # if we have enabled the trades to actually happen, then go ahead                        
                         # SI Can override any of the calculated values here:
