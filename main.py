@@ -76,8 +76,8 @@ class Fusion_Algo(QCalgo_test_perfects):
             self.ManualLiveTrading = True
             self.ManualHistoryTrading = False    # Can turn off if we want backtesting without adding in the historic trades
             # TODO: make backtest start stop dates use a single updating value, so do not need to edit both
-            self.SetStartDate(2022, 11, 15)  # Set Start Date
-            self.SetEndDate(2022, 11, 16)         
+            self.SetStartDate(2022, 12, 8)  # Set Start Date
+            self.SetEndDate(2022, 12, 8)         
             self.backtest_start = "2022-10-10"
             self.backtest_end = "2022-11-8"
             self.auto_trade_brad_perfects = True
@@ -127,18 +127,18 @@ class Fusion_Algo(QCalgo_test_perfects):
         self.log_eh_el_detail = False                   #logs all the new peaks and troughs found
         self.log_eh_el_summary = False                  #logs the changes in the peaks and troughs found
         self.log_eh_el_at_end = True                    #logs EHEL details and creates the csv file  
-        self.log_tbu_perfects_details = True
+        self.log_tbu_perfects_details = False
         self.log_tbu_perfects_at_end = True
         self.log_price_trackers_at_end = False
-        self.log_session_boxes_at_end = True
-        self.log_perfect_spots = True
+        self.log_session_boxes_at_end = False
+        self.log_perfect_spots = False
         self.log_session_changes = False
-        self.log_EMAs = True
+        self.log_EMAs = False
         self.log_bar_height_diffs = False
         self.log_position_closures = True               # log the request to close positions in the order code
         self.log_brad_peaks_detail = False
-        self.log_brad_transfers = True                  # log details of how the peaks and troughs are copied over
-        self.log_brad_breakout_spots = True             # log details of the details of a Brad breakout spot
+        self.log_brad_transfers = False                  # log details of how the peaks and troughs are copied over
+        self.log_brad_breakout_spots = False             # log details of the details of a Brad breakout spot
         self.log_brad_make_breakouts = True              # log details when copying the Brad breakout into the general structure
         self.debugging_trade_tracking = True             #sends trade details to the debug log 
 
@@ -213,8 +213,8 @@ class Fusion_Algo(QCalgo_test_perfects):
             # this is for backtesting mode
             #self.ForexSymbols = ['GBPJPY', 'GBPAUD', 'EURJPY', 'EURAUD', 'USDCAD', 'USDCHF', 'USDJPY']
             #self.AllowChannel = ['GBPJPY', 'GBPAUD', 'EURJPY', 'EURAUD', 'USDCAD', 'USDCHF', 'USDJPY']            
-            self.ForexSymbols = ['XAUUSD']
-            self.AllowChannel = ['XAUUSD']
+            self.ForexSymbols = ['EURAUD']
+            self.AllowChannel = ['EURAUD']
             #self.AllowChannel = []
             self.Log(f"Running a backtest from: {self.backtest_start} until {self.backtest_end} at resolution {self.myRes} [2=Minute]")
             
@@ -597,7 +597,7 @@ class Fusion_Algo(QCalgo_test_perfects):
 
                 #SI 23.11.2022 temp checking of the bar types:
                 candle_type = fusion_utils.get_candle_type(sd.Bars5M, sd.Bars5MColour, sd.minPriceVariation * 10)
-                self.Debug("Candle Type: " + str(candle_type))                
+                #self.Debug("Candle Type: " + str(candle_type))                
 
                 self.candle_item["candle_time_mt4"] = fusion_utils.get_times(sd.Bars5M[0].Time, 'us')['mt4'].strftime("%Y.%m.%d, %H:%M:%S")             
                 self.candle_item["candle_chart"] = "5 min"

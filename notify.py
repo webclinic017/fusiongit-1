@@ -56,7 +56,7 @@ class QCalgo_notifications(QCalgo_channel_breakout):
         self.log_buffer_hourly.append(new_row)
             # the log_buffer_hourly will get several items added to it and only email in the separate event handler
 
-    def SendBreakoutEmail(self, symbol, mt4_time, pos4_price, pos4_time, BO_type, BO_label, BO_pullback1_price, pb1_distance_pips):
+    def SendBreakoutEmail(self, symbol, mt4_time, pos4_price, pos4_time, BO_type, BO_label, BO_pullback1_price, pb1_distance_pips, double_spot):
         if self.IsWarmingUp:
             return
         
@@ -74,7 +74,10 @@ class QCalgo_notifications(QCalgo_channel_breakout):
         
         logdate = fusion_utils.format_datetime_using_string(mt4_time, "@ %H.%M %Y.%m.%d")
 
-        logsub = f"** BREAKOUT Get on Charts **: {symbol} {BO_type} | {logdate}"  
+        if double_spot:
+            logsub = f"** DOUBLE SPOT BREAKOUT **: {symbol} {BO_type} | {logdate}" 
+        else:    
+            logsub = f"** BREAKOUT Get on Charts **: {symbol} {BO_type} | {logdate}"  
 
         if self.LiveMode:
             self.Notify.Email(self.EmailAddress, f"{logsub} | {self.ModeName} ", logmsg)  
@@ -293,7 +296,7 @@ class QCalgo_notifications(QCalgo_channel_breakout):
     def OutputFunction(self, dump_all_to_file, to_file_only, write_to_hourly, log_sub):
         # will output the results         
 
-        fieldnames = ['symbol', 'resolution', "BO_label", "update_time", "pos1_label", "pos1_price", "pos1_time", "pos2_label", "pos2_price", \
+        fieldnames = ['symbol', 'double_spot', 'resolution', "BO_label", "update_time", "pos1_label", "pos1_price", "pos1_time", "pos2_label", "pos2_price", \
                     "pos2_time", "pos3_label", "pos3_price", "pos3_time", "pos4_label", "pos4_price", "pos4_time", "pullback1_price", "EH_price", \
                     "EL_price", "TW", "status", "pullback1_hit", "BO_pullback1_breached_time", "hh_or_ll_hit", "hh_or_ll_time", "ignore_200ema", "squeeze_status", "squeeze_time", \
                     "squeeze_price", "enter_trade", "reason_notes", "entry_time", "ema9", "ema45", "ema135", "ema200", \
@@ -303,7 +306,8 @@ class QCalgo_notifications(QCalgo_channel_breakout):
 
 
         rows = []
-        blank_row = {'symbol': None, 
+        blank_row = {'symbol': None,
+                    'double_spot': None, 
                     'resolution': None,
                     "BO_label": None,
                     "update_time": None,
@@ -398,6 +402,7 @@ class QCalgo_notifications(QCalgo_channel_breakout):
         self.Log(f"row['BO_label']: {row['BO_label']} | self.myRes: {self.myRes}")
 
         new_row['symbol'] = symbol
+        new_row['double_spot'] = row['double_spot']
         new_row['resolution'] = chart_res
         new_row['BO_label'] = row['BO_label']
         new_row['update_time'] = fusion_utils.format_datetime_using_string(row['update_time']) 

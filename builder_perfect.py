@@ -115,6 +115,7 @@ class builder_perfect(builder_perfect_1):
         self.rolling_low = 0.0
         self.symbol = ""
         self.perfect_just_formed = False
+        self.double_spot = False   #flag to indicate that we have a double reversal spot
         self.event_log = []    #use this to output an event log per breakout
         self.log_item = {"event_time_mt4": None,
                         "event_details": None,
@@ -122,11 +123,10 @@ class builder_perfect(builder_perfect_1):
                         "event_price": None,
                         "event_chart": None}
 
-
-
-
         
         self.builder_store = {"BO_label": None,
+                            "symbol": None,
+                            "double_spot": None,
                             "update_time": None,
                             "pos1_label": None,
                             "pos1_price": None,
@@ -241,6 +241,12 @@ class builder_perfect(builder_perfect_1):
 
         self.rolling_high = 0.0
         self.rolling_low = 0.0
+
+        #SI - 13.12.2022 new logic that checks for a previous entry in the same trading window as entry rules should be relaxed
+        #search the log for an entry in the same trading window
+        #if we get a match, set the variable, change email and then ultimately relax the entry rules
+        self.double_spot = self.find_double_spot(sender, symbol, mt4_time, my_breakout)
+
 
         if my_breakout.long_or_short == 'LONG':
             #si moved for logging
@@ -435,10 +441,16 @@ class builder_perfect(builder_perfect_1):
             self.store_CLL(time_now)
         
         self.add_to_event_log(mt4_time, f"Trend Detection", f" With 5 min Trend: {self.with_5m_trend } | With 1 hr Trend: {self.with_1h_trend}", 0, "5 min / 1 hr")        
-       
+
+        if self.double_spot:
+            if self.log_details: sender.Log(f"{symbol} Double Spot at {mt4_time} - {self.BO_label} Breakout")
+            self.add_to_event_log(mt4_time, f"Double Spot", f"Double {symbol} spot in this TW - relax rules", 0, "5 min")  
+
+
         #send an email notification 
         if sender.send_breakout_emails:
-            sender.SendBreakoutEmail(symbol, mt4_time, self.BO_pos4_price, self.BO_pos4_time, self.BO_type, self.BO_label, self.BO_pullback1_price, pb1_distance_pips)               
+            sender.SendBreakoutEmail(symbol, mt4_time, self.BO_pos4_price, self.BO_pos4_time, self.BO_type, self.BO_label, self.BO_pullback1_price, \
+                pb1_distance_pips, self.double_spot)               
 
         return True    
     
@@ -710,19 +722,6 @@ class builder_perfect(builder_perfect_1):
         #check for squeeze must be done here    
         squeeze_valid = self.check_for_squeeze(sender, symbol, chartres, closeprice, timenow, ema9, ema45, ema135, ema200, candle_open_1m_mt4)
 
-        ''' SI redundant check ... needs to be done at point of entry check 
-        if self.ignore_200ema and self.BO_type == "SHORT":
-            if closeprice < ema9 and closeprice < ema45 and closeprice < ema135:
-                squeeze_valid = True
-        if self.ignore_200ema and self.BO_type == "LONG":
-            if closeprice > ema9 and closeprice > ema45 and closeprice > ema135:
-                squeeze_valid = True
-        if not self.ignore_200ema and self.BO_type == "SHORT":
-            if closeprice < ema9 and closeprice < ema45 and closeprice < ema135 and closeprice < ema200:
-                squeeze_valid = True
-        if not self.ignore_200ema and self.BO_type == "LONG":
-            if closeprice > ema9 and closeprice > ema45 and closeprice > ema135 and closeprice > ema200:
-                squeeze_valid = True '''
 
         if not squeeze_valid:             
             return         
@@ -1008,7 +1007,16 @@ class builder_perfect(builder_perfect_1):
         return False
   
 
-    
+    def find_double_spot(self, sender, symbol, mt4_time, my_breakout):
+        # check to see if we have already entered a trade on this symbol in the same trading window
+        if self.log_details: sender.Log(f"Checking for double spot on {symbol}")
+        for perfect_record in self.perfect_library: 
+            #find records in library for today
+            if perfect_record["symbol"] == symbol:                
+                if perfect_record["pos4_time"].date() == mt4_time.date() and fusion_utils.get_trading_window(mt4_time) == fusion_utils.get_trading_window(perfect_record["pos4_time"]):
+                    if self.log_details: sender.Log(f"Found double reverse spot on {symbol}")
+                    return True
+        return False
 
 
 

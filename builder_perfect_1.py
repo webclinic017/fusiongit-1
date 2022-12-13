@@ -351,7 +351,9 @@ class builder_perfect_1(object):
         if len(self.perfect_library) > self.history_length:
             self.perfect_library.pop(0)
 
-        self.builder_store["BO_label"] = self.BO_label                    
+        self.builder_store["BO_label"] = self.BO_label      
+        self.builder_store["symbol"] = self.symbol        
+        self.builder_store["double_spot"] = self.double_spot                          
         self.builder_store["update_time"] = fusion_utils.get_times(time_now, 'us')['mt4']
         self.builder_store["pos1_label"] = "L"
         self.builder_store["pos1_price"] = self.BO_pos1_price
@@ -420,6 +422,8 @@ class builder_perfect_1(object):
             self.perfect_library.pop(0)
 
         self.builder_store["BO_label"] = self.BO_label
+        self.builder_store["symbol"] = self.symbol   
+        self.builder_store["double_spot"] = self.double_spot                           
         self.builder_store["update_time"] = fusion_utils.get_times(time_now, 'us')['mt4']
         self.builder_store["pos1_label"] = "H"
         self.builder_store["pos1_price"] = self.BO_pos1_price
